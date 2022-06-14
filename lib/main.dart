@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:style_gallery/providers/sublimation_provider.dart';
 import 'providers/providers.dart';
 import 'router/app_routes.dart';
 import 'screens/screens.dart';
@@ -20,6 +22,8 @@ class AppState extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => OrdersProvider(), lazy: false),
+        ChangeNotifierProvider(
+            create: (_) => SublimationProvider(), lazy: false),
         ChangeNotifierProvider(create: (_) => AuthService()),
       ],
       child: const MyApp(),
@@ -33,6 +37,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.touch,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.unknown
+          },
+        ),
         scaffoldMessengerKey: NotificationsService.messengerKey,
         debugShowCheckedModeBanner: false,
         title: 'Material App',
@@ -40,7 +52,7 @@ class MyApp extends StatelessWidget {
         initialRoute: AppRoutes.initialRoute,
         routes: AppRoutes.getAppRoutes(),
         onGenerateRoute: AppRoutes.onGenerateRoute,
-        theme: ThemeData.light());
+        theme: AppTheme.lightTheme);
   }
 }
 

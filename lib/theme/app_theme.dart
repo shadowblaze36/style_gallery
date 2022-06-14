@@ -7,14 +7,20 @@ class AppTheme {
   static const Color gray = Color.fromRGBO(167, 168, 169, 1);
   static const Color grayDark = Color.fromRGBO(99, 101, 105, 1);
   static const Color tegraBlue = Color(0xFF2dbec2);
-  static ThemeData lightTheme = ThemeData.light().copyWith(
+  static ThemeData lightTheme = ThemeData(
+    fontFamily: 'Gotham',
     //Color primario
-    useMaterial3: true,
+    useMaterial3: false,
     primaryColor: primary,
     //AppBar Theme
     appBarTheme: const AppBarTheme(
       color: primary,
       elevation: 0,
+      centerTitle: true,
+      actionsIconTheme: IconThemeData(color: Colors.white),
+      titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+      toolbarTextStyle: TextStyle(color: Colors.white),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
@@ -27,10 +33,10 @@ class AppTheme {
     //ElevatedTButtons
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        primary: primary,
-        shape: const StadiumBorder(),
-        elevation: 0,
-      ),
+          primary: primary,
+          shape: const StadiumBorder(),
+          elevation: 0,
+          textStyle: const TextStyle(color: Colors.white)),
     ),
 
     //Inputs

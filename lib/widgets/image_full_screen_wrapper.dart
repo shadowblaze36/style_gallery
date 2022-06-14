@@ -5,11 +5,10 @@ class ImageFullScreenWrapperWidget extends StatelessWidget {
   final FadeInImage child;
   final bool dark;
 
-  const ImageFullScreenWrapperWidget({
-    Key? key,
+  ImageFullScreenWrapperWidget({
     required this.child,
     this.dark = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +34,10 @@ class ImageFullScreenWrapperWidget extends StatelessWidget {
 }
 
 class FullScreenPage extends StatefulWidget {
-  const FullScreenPage({
-    Key? key,
+  FullScreenPage({
     required this.child,
     required this.dark,
-  }) : super(key: key);
+  });
 
   final FadeInImage child;
   final bool dark;
@@ -54,8 +52,7 @@ class _FullScreenPageState extends State<FullScreenPage> {
     var brightness = widget.dark ? Brightness.light : Brightness.dark;
     var color = widget.dark ? Colors.black12 : Colors.white70;
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: [SystemUiOverlay.top]);
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: color,
       statusBarColor: color,
@@ -69,11 +66,10 @@ class _FullScreenPageState extends State<FullScreenPage> {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        // Restore your settings here...
-        ));
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      // Restore your settings here...
+    ));
     super.dispose();
   }
 
@@ -86,7 +82,7 @@ class _FullScreenPageState extends State<FullScreenPage> {
           Stack(
             children: [
               AnimatedPositioned(
-                duration: const Duration(milliseconds: 333),
+                duration: Duration(milliseconds: 333),
                 curve: Curves.fastOutSlowIn,
                 top: 0,
                 bottom: 0,

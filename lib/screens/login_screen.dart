@@ -30,7 +30,12 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 15),
+                const Text(
+                  'Style Gallery',
+                  style: TextStyle(color: Colors.white, fontSize: 30),
+                ),
+                const SizedBox(height: 15),
                 CardContainer(
                   child: Column(
                     children: [
@@ -77,9 +82,7 @@ class _LoginForm extends StatelessWidget {
             autocorrect: false,
             keyboardType: TextInputType.text,
             decoration: InputDecorations.authInputDecoration(
-                hintText: 'nombre.apellido',
-                labelText: 'Usuario',
-                prefixIcon: Icons.person_outline),
+                labelText: 'Usuario', prefixIcon: Icons.person_outline),
             validator: (value) {
               String pattern = '[a-zA-Z]+\.[a-zA-Z]+';
               RegExp regExp = RegExp(pattern);
@@ -89,13 +92,26 @@ class _LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           TextFormField(
+              onFieldSubmitted: (value) async {
+                loginForm.isLoading ? null : FocusScope.of(context).unfocus();
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
+                if (!loginForm.isValidForm()) return;
+                loginForm.isLoading = true;
+                final String? errorMessage = await authService.login(
+                    loginForm.usuario, loginForm.password);
+                if (errorMessage == null) {
+                  Navigator.pushReplacementNamed(context, 'home');
+                } else {
+                  NotificationsService.showSnackbar(errorMessage);
+                  loginForm.isLoading = false;
+                }
+              },
               obscureText: true,
               autocorrect: false,
               keyboardType: TextInputType.text,
               decoration: InputDecorations.authInputDecoration(
-                  hintText: '******',
-                  labelText: 'Contraseña',
-                  prefixIcon: Icons.lock_outline),
+                  labelText: 'Contraseña', prefixIcon: Icons.lock_outline),
               validator: (value) {
                 if (value != null && value.length >= 4) return null;
                 return 'La contraseña debe tener almenos 4 caracteres';
@@ -108,14 +124,6 @@ class _LoginForm extends StatelessWidget {
               disabledColor: Colors.grey,
               elevation: 0,
               color: const Color.fromRGBO(133, 46, 44, 1),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                child: Text(
-                  loginForm.isLoading ? 'Espere...' : 'Ingresar',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
               onPressed: loginForm.isLoading
                   ? null
                   : () async {
@@ -132,7 +140,15 @@ class _LoginForm extends StatelessWidget {
                         NotificationsService.showSnackbar(errorMessage);
                         loginForm.isLoading = false;
                       }
-                    }),
+                    },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                child: Text(
+                  loginForm.isLoading ? 'Espere...' : 'Ingresar',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              )),
           const SizedBox(height: 10),
         ],
       ),

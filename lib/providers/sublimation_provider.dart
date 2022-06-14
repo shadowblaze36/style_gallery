@@ -5,10 +5,21 @@ import 'package:style_gallery/helpers/debouncer.dart';
 import 'package:style_gallery/models/models.dart';
 
 class SublimationProvider extends ChangeNotifier {
-  final String _baseUrl = 'http://10.48.26.21:7135/api/Sublimation/';
+  final String _baseUrl = 'http://arnws001:7575/api/Sublimation/';
 
+  SublimationProvider() {
+    getContents();
+  }
   Map<String, Contents> pathContents = {};
+  bool isLoading = false;
+
   String _path = 'home';
+  String get path => _path;
+  set path(String path) {
+    _path = path;
+    notifyListeners();
+  }
+
   // String _result = '';
   int _resultCode = 200;
   // String _searchType = 'Order';
@@ -43,8 +54,10 @@ class SublimationProvider extends ChangeNotifier {
   // }
 
   Future<List<Content>> getContents() async {
+    isLoading = true;
     if (pathContents.containsKey(_path)) {
       _resultCode = 200;
+      isLoading = false;
       notifyListeners();
       return pathContents[_path]!.content;
     }
@@ -52,35 +65,81 @@ class SublimationProvider extends ChangeNotifier {
     if (_path == 'home') {
       uri += 'GetSublimationRootContent';
     } else {
-      uri += 'GetSublimationContentByPath$_path';
+      uri += 'GetSublimationContentByPath?path=$_path';
     }
-
-    final response = await http.get(Uri.parse(uri));
+    print(uri);
+    final response = await http.get(
+      Uri.parse(uri),
+    );
     _resultCode = response.statusCode;
     if (response.statusCode == 200) {
-      print(Contents.fromJson(response.body).content.length);
       pathContents[_path] = Contents.fromJson(response.body);
+      print(Contents.fromJson(response.body).content);
+      isLoading = false;
       notifyListeners();
       return Contents.fromJson(response.body).content;
     } else {
       print('failed response');
       //_result = response.body;
       pathContents[_path] = Contents(order: _path, content: []);
+      isLoading = false;
       notifyListeners();
       return [];
       //throw Exception('Failed to load content');
     }
   }
 
-  // String getfullImagePath(name) {
-  //   if (name != null) {
-  //     return _baseUrl + 'GetImage?order=$_order&image=$name';
-  //   }
+  void refresh() async {
+    isLoading = true;
+    String uri = _baseUrl;
+    if (_path == 'home') {
+      uri += 'GetSublimationRootContent';
+    } else {
+      uri += 'GetSublimationContentByPath?path=$_path';
+    }
+    final response = await http.get(Uri.parse(uri));
+    _resultCode = response.statusCode;
+    if (response.statusCode == 200) {
+      pathContents[_path] = Contents.fromJson(response.body);
+    } else {
+      pathContents[_path] = Contents(order: _path, content: []);
+    }
+    isLoading = false;
+    notifyListeners();
+  }
 
-  //   return 'https://i.stack.imgur.com/GNhxO.png';
-  // }
+  void generateNextRoute(String nextRoute) {
+    if (_path == 'home') {
+      _path = nextRoute;
+    } else {
+      _path += '/$nextRoute';
+    }
+    getContents();
+    notifyListeners();
+  }
 
-  Future<List<Content>> searchSyles(String query) async {
+  void generatePreviousRoute() {
+    if (_path.contains('/')) {
+      _path = _path.substring(0, _path.lastIndexOf('/'));
+    } else {
+      _path = 'home';
+    }
+    getContents();
+    notifyListeners();
+  }
+
+  String getfullImagePath(name, type) {
+    if (name != null && type != null) {
+      String fullImagePath =
+          '${_baseUrl}GetSublimationImage?path=$_path/$name$type';
+      fullImagePath = fullImagePath.replaceAll(RegExp(' '), '%20');
+      print(fullImagePath);
+      return fullImagePath;
+    }
+    return 'https://i.stack.imgur.com/GNhxO.png';
+  }
+
+  Future<List<Content>> searchStyles(String query) async {
     final response =
         await http.get(Uri.parse(_baseUrl + 'GetContent/?order=$query'));
 
@@ -91,7 +150,7 @@ class SublimationProvider extends ChangeNotifier {
   void getStylesByQuery(String searchTerm) {
     debouncer.value = '';
     debouncer.onValue = (value) async {
-      final results = await searchSyles(value);
+      final results = await searchStyles(value);
       _styleStreamController.add(results);
     };
     final timer = Timer.periodic((const Duration(milliseconds: 300)), (_) {

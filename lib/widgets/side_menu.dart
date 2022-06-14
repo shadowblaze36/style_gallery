@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:style_gallery/router/app_routes.dart';
+import 'package:style_gallery/services/services.dart';
 import 'package:style_gallery/theme/app_theme.dart';
 
 class SideMenu extends StatelessWidget {
@@ -9,6 +11,7 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final menuOptions = AppRoutes.menuOptions;
+    final authService = Provider.of<AuthService>(context, listen: false);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -43,7 +46,10 @@ class SideMenu extends StatelessWidget {
               'Log out',
               style: TextStyle(color: AppTheme.primary),
             ),
-            onTap: () => null,
+            onTap: () {
+              authService.logout();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
           ),
         ],
       ),
@@ -60,6 +66,9 @@ class _DrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerHeader(
       margin: EdgeInsets.zero,
+      decoration: const BoxDecoration(
+        color: AppTheme.primary,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,9 +83,6 @@ class _DrawerHeader extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, 'home'),
           ),
         ],
-      ),
-      decoration: const BoxDecoration(
-        color: AppTheme.primary,
       ),
     );
   }

@@ -25,8 +25,13 @@ class ImageGrid extends StatelessWidget {
           content: ordersProvider
               .orderContents[ordersProvider.order]!.content[index],
         ),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, mainAxisExtent: 275),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: (MediaQuery.of(context).size.width > 500)
+                ? 3
+                : (MediaQuery.of(context).size.width > 600)
+                    ? 4
+                    : 2,
+            mainAxisExtent: 275),
       );
     }
   }
@@ -50,6 +55,7 @@ class _ImageCard extends StatelessWidget {
             child: Hero(
               tag: name,
               child: ImageFullScreenWrapperWidget(
+                dark: false,
                 child: FadeInImage(
                   placeholder: const AssetImage('assets/no-image.jpg'),
                   image: NetworkImage(ordersProvider.getfullImagePath(name)),
@@ -57,11 +63,10 @@ class _ImageCard extends StatelessWidget {
                   width: 150,
                   fit: BoxFit.contain,
                 ),
-                dark: false,
               ),
             )),
         const SizedBox(
-          height: 5,
+          height: 2,
         ),
         Text(
           content.name,

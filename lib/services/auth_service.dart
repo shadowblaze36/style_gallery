@@ -7,29 +7,20 @@ import 'package:flutter/cupertino.dart';
 
 class AuthService extends ChangeNotifier {
   final String _baseUrl = 'http://10.38.160.10:7878/api';
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<String?> login(String usuario, String password) async {
     final Map<String, dynamic> authData = {
-      'username': 'tegraglobal\\' + usuario,
+      'username': 'tegraglobal\\$usuario',
       'password': password
     };
-
-    print(authData);
-    print(jsonEncode(authData));
-    final resp = await http.post(Uri.parse(_baseUrl + '/auth/login'),
+    final resp = await http.post(Uri.parse('$_baseUrl/auth/login'),
         body: jsonEncode(authData),
         headers: {
           "Accept": "application/json",
           "content-type": "application/json"
-        });
-    print('------------------------------');
-    print(resp.body);
-    print(resp.statusCode);
+        }).timeout(const Duration(seconds: 10));
     final Map<String, dynamic> decodeResp = json.decode(resp.body);
-
-    print(decodeResp);
-    //return 'Error en el login';
 
     if (decodeResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodeResp['idToken']);

@@ -3,7 +3,7 @@ import 'package:style_gallery/models/models.dart';
 import 'package:style_gallery/screens/screens.dart';
 
 class AppRoutes {
-  static const initialRoute = 'home';
+  static const initialRoute = 'sublimation';
 
   static final menuOptions = <MenuOption>[
     MenuOption(
